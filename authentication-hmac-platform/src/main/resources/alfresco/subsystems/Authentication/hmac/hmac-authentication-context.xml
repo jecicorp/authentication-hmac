@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!--
+	Copyright 2021 - Jeci SARL - https://jeci.fr
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU Lesser General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public License
+	along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+
+<beans>
+	<bean id="authenticationComponent" class="fr.jeci.repo.security.authentication.HMacAuthenticationComponentImpl"
+		parent="authenticationComponentBase">
+		<property name="allowGuestLogin">
+			<value>false</value>
+		</property>
+		<property name="secretKey">
+			<value>${hmac.authentication.secretKey}</value>
+		</property>
+		<!-- format : hh:mm:ss -->
+		<property name="validateTimeToken">
+			<value>${hmac.authentication.validateTimeToken}</value>
+		</property>
+		<property name="personService">
+			<ref bean="personService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+	</bean>
+
+	<!-- Wrapped version to be used within subsystem -->
+	<bean id="AuthenticationComponent" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<value>org.alfresco.repo.security.authentication.AuthenticationComponent</value>
+		</property>
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="target">
+			<ref bean="authenticationComponent" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Authentication service for chaining -->
+	<bean id="localAuthenticationService" class="org.alfresco.repo.security.authentication.AuthenticationServiceImpl">
+		<property name="ticketComponent">
+			<ref bean="ticketComponent" />
+		</property>
+		<property name="authenticationComponent">
+			<ref bean="authenticationComponent" />
+		</property>
+		<property name="sysAdminParams">
+			<ref bean="sysAdminParams" />
+		</property>
+		<property name="personService">
+			<!-- use the unsecure "personService" because we need to know if -->
+			<!-- personService.getUserNamesAreCaseSensitive(), without having the user authenticated yet -->
+			<ref bean="personService" />
+		</property>
+		<property name="protectedUsersCache">
+			<ref bean="protectedUsersCache" />
+		</property>
+		<property name="protectionEnabled">
+			<value>${authentication.protection.enabled}</value>
+		</property>
+		<property name="protectionLimit">
+			<value>${authentication.protection.limit}</value>
+		</property>
+		<property name="protectionPeriodSeconds">
+			<value>${authentication.protection.periodSeconds}</value>
+		</property>
+	</bean>
+
+</beans>

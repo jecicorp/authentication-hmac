@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Get the nodeId by path</shortname>
+	<description>Get the node id by path</description>
+	<url>/fr/jeci/hmac-alfresco/getNodeId?path={path}</url>
+	<format default="json">extension</format>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>
