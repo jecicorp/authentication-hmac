@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.jeci.alfresco</groupId>
 	<artifactId>authentication-hmac</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>JECI - Authentication HMac</name>
 	<description>Ajout d'un système d'authentification basé sur une clé hmac</description>
 	<packaging>pom</packaging>
