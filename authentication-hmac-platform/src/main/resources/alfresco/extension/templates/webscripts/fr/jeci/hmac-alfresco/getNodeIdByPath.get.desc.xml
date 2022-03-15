@@ -5,4 +5,5 @@
 	<format default="json">extension</format>
 	<authentication>user</authentication>
 	<transaction>required</transaction>
+	<family>Authentication HMAC</family>
 </webscript>
